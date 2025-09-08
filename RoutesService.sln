@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoutesService", "RoutesService.csproj", "{D5BB04A0-1B51-A522-B617-FC109B576E36}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D5BB04A0-1B51-A522-B617-FC109B576E36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5BB04A0-1B51-A522-B617-FC109B576E36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5BB04A0-1B51-A522-B617-FC109B576E36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5BB04A0-1B51-A522-B617-FC109B576E36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2CEDBAAC-1E95-465E-8C33-27FA94BEB7FF}
+	EndGlobalSection
+EndGlobal
