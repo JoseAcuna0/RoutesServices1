@@ -11,8 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 var neo4jSettings = builder.Configuration.GetSection("Neo4j");
 var driver = GraphDatabase.Driver(
     neo4jSettings["Uri"],
-    AuthTokens.Basic(neo4jSettings["Username"], neo4jSettings["Password"]),
-    config => config.WithEncryptionLevel(EncryptionLevel.None)
+    AuthTokens.Basic(neo4jSettings["Username"], neo4jSettings["Password"])
 );
 builder.Services.AddSingleton(driver);
 builder.Services.AddScoped<IRouteService, RouteService>();

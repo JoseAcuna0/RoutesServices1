@@ -23,23 +23,48 @@ namespace RoutesService.src.Services
         {
             var route = RouteMapper.ToModel(dto);
 
-            var query = @"
-                CREATE (r:Route {
-                    Id: $Id,
-                    Origin: $Origin,
-                    Destination: $Destination,
-                    StartTime: $StartTime,
-                    EndTime: $EndTime,
-                    Stops: $Stops,
-                    IsActive: $IsActive
-                })
-                RETURN r
-            ";
-
             var session = _driver.AsyncSession();
             try
             {
-                var result = await session.RunAsync(query, new
+                // 1. Validar duplicados antes de crear
+                var checkQuery = @"
+                    MATCH (r:Route)
+                    WHERE r.Origin = $Origin 
+                      AND r.Destination = $Destination 
+                      AND r.StartTime = $StartTime 
+                      AND r.EndTime = $EndTime
+                    RETURN r
+                ";
+
+                var checkResult = await session.RunAsync(checkQuery, new
+                {
+                    route.Origin,
+                    route.Destination,
+                    route.StartTime,
+                    route.EndTime
+                });
+
+                var duplicates = await checkResult.ToListAsync();
+                if (duplicates.Any())
+                {
+                    throw new InvalidOperationException("Ya existe una ruta con los mismos datos (origen, destino, inicio y término).");
+                }
+
+                // 2. Crear ruta si no hay duplicados
+                var createQuery = @"
+                    CREATE (r:Route {
+                        Id: $Id,
+                        Origin: $Origin,
+                        Destination: $Destination,
+                        StartTime: $StartTime,
+                        EndTime: $EndTime,
+                        Stops: $Stops,
+                        IsActive: $IsActive
+                    })
+                    RETURN r
+                ";
+
+                var result = await session.RunAsync(createQuery, new
                 {
                     route.Id,
                     route.Origin,
@@ -143,7 +168,8 @@ namespace RoutesService.src.Services
                     r.Destination = $Destination,
                     r.StartTime = $StartTime,
                     r.EndTime = $EndTime,
-                    r.Stops = $Stops
+                    r.Stops = $Stops,
+                    r.IsActive = $IsActive
                 RETURN r
             ";
 
@@ -157,7 +183,8 @@ namespace RoutesService.src.Services
                     dto.Destination,
                     dto.StartTime,
                     dto.EndTime,
-                    dto.Stops
+                    dto.Stops,
+                    dto.IsActive // 👈 ahora se puede editar el estado
                 });
 
                 var records = await result.ToListAsync();
@@ -195,9 +222,9 @@ namespace RoutesService.src.Services
             try
             {
                 var result = await session.RunAsync(query, new { Id = id });
-                var record = await result.ToListAsync();
+                var records = await result.ToListAsync();
 
-                return record != null;
+                return records.Any(); // 👈 corregido
             }
             finally
             {
