@@ -4,14 +4,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using RoutesService.src.Interfaces;
 using RoutesService.src.Services;
+using DotNetEnv;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
+Env.Load(); // Cargar variables de entorno desde el archivo .env
+
 var neo4jSettings = builder.Configuration.GetSection("Neo4j");
 var driver = GraphDatabase.Driver(
-    neo4jSettings["Uri"],
-    AuthTokens.Basic(neo4jSettings["Username"], neo4jSettings["Password"])
+    builder.Configuration["Neo4j__Uri"] ?? neo4jSettings["Uri"],
+    AuthTokens.Basic(
+        builder.Configuration["Neo4j__Username"] ?? neo4jSettings["Username"],
+        builder.Configuration["Neo4j__Password"] ?? neo4jSettings["Password"]
+    )
 );
 builder.Services.AddSingleton(driver);
 builder.Services.AddScoped<IRouteService, RouteService>();
